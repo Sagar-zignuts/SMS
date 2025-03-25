@@ -3,6 +3,9 @@ const {client} = require('./config/PgConfig')
 const {createStudentTable} = require('./models/students')
 const { createParentTable } = require("./models/parents")
 const { createAdminTable } = require("./models/admin")
+const {IsAdmin} = require('./IsAdmin')
+const AuthRoute = require('./routes/AuthRoute')
+const StudentRoute = require('./routes/StudentRoute')
 
 const app = express()
 
@@ -12,14 +15,15 @@ const DBInit = async()=>{
     await createStudentTable()
     await createParentTable()
     await createAdminTable()
+
+    await IsAdmin()
 }
 
 DBInit()
 
-app.get("/" , (req,res)=>{
-    console.log("Helo");
-})
+app.use('/api/auth' , AuthRoute)
+app.use('/api/student' , StudentRoute)
 
-app.listen(3000 , ()=>{
+app.listen(4000 , ()=>{
     console.log("Server running");
 })

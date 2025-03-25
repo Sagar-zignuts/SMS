@@ -14,7 +14,7 @@ const createParentTable = async () => {
 
   try {
     await client.query(query);
-    console.log("parent table created successfully");
+    // console.log("parent table created successfully");
   } catch (error) {
     console.log(`Error in create table of parent : ${error}`);
   }

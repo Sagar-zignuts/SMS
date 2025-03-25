@@ -1,4 +1,6 @@
+const e = require("express");
 const { client } = require("../config/PgConfig");
+const bcrypt = require('bcrypt')
 
 const createAdminTable = async () => {
   const query = `
@@ -11,10 +13,36 @@ const createAdminTable = async () => {
 
   try {
     await client.query(query);
-    console.log("admin table created successfully");
+    // console.log("admin table created successfully");
   } catch (error) {
     console.log(`Error in create table of admin : ${error}`);
   }
 };
 
-module.exports = { createAdminTable };
+// const createAdmin = async(email,password)=>{
+//   const hashedPassword =  bcrypt.hash(password , 10)
+//   const query = `
+//   INSERT INTO admin
+//   (email , password)
+//   VALUES
+//   $1 ,$2
+//   RETURNING *
+//   `;
+//   const value = [email , hashedPassword]
+//   const {rows} = await client.query(query , value)
+
+//   return rows[0];
+  
+// }
+
+const findByEmail = async(email)=>{
+    const query = `
+    SELECT * FROM admins
+    WHERE email = $1`;
+    console.log(email);
+    
+    const {rows} = await client.query(query,[email])
+    return rows[0];
+}
+
+module.exports = { createAdminTable ,findByEmail};

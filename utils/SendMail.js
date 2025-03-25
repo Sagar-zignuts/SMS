@@ -1,6 +1,7 @@
 const nodemailer = require('nodemailer')
 
 const transport = nodemailer.createTransport({
+    service : 'gmail',
     secure:true,
     host: "smtp.example.com",
     port : 587,
@@ -10,14 +11,14 @@ const transport = nodemailer.createTransport({
     }
 })
 
-const sendMail = async(to,username)=>{
+const sendMail = async(to)=>{
     
     try {
         await transport.sendMail({
             from:"sagarbh@zignuts.com",
             to:to,
             subject:'Welcome in portal',
-            text:`Hello ${username},\n\nWelcome to portal! Your account has been successfully created.`,
+            text:`Hello ,\n\nWelcome to portal! Your account has been successfully created.`,
         })
         console.log("Send successfully");
         
