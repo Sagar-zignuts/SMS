@@ -93,7 +93,6 @@ const updateStudent = async (id, email, className, school, profile_pic) => {
     const { rows } = await client.query(query, value);
     return rows[0];
   } catch (error) {
-    console.log(error);
     
     throw new Error("error in update the user :", error.message)
   }

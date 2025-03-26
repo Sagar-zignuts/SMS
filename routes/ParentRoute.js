@@ -10,14 +10,14 @@ const {
   authMiddleware,
   restrictedTo,
 } = require("../middlewares/AuthMiddleware");
-const { validatParent } = require("../middlewares/Validation");
+const { validatParent , validatParentUpdate } = require("../middlewares/Validation");
 
 router.use(authMiddleware);
 
 router.post("/", restrictedTo("admin"), validatParent, createParentByAdmin);
 router.get("/", restrictedTo("admin"), getParentByAdmin);
 router.get("/:id", restrictedTo("admin"), getParentWithIdByAdmin);
-router.put("/:id", restrictedTo("admin"), validatParent, updateParentByAdmin);
+router.put("/:id", restrictedTo("admin"), validatParentUpdate, updateParentByAdmin);
 router.delete("/:id", restrictedTo("admin"), deleteParentByAdmin);
 
-module.exports(router);
+module.exports = router;

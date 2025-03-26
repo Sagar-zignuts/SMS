@@ -9,6 +9,8 @@ const {
   getStudentByMail,
 } = require("../models/students");
 
+const redis = require('../config/RedisConfig')
+
 const isValidEmail = (email) => {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 };
@@ -34,6 +36,7 @@ const registerStudent = async (req, res) => {
     );
     console.log(student);
     await sendMail(email);
+    await redis.del('students_list');
     return res
       .status(200)
       .json({ success: true, message: "student register successfuly" });
@@ -80,7 +83,7 @@ const loginStudent = async (req, res) => {
         email: student.email,
         role : 'student'
       },
-      "sfnNOIEFIUASWIONIOCOIS8CbcnkjsgaNKSbc"
+      process.env.JWT_SECRET_KEY
     );
     return res
       .status(200)
@@ -129,7 +132,7 @@ const loginAdmin = async (req, res) => {
         email: user.email,
         role : 'admin'
       },
-      "sfnNOIEFIUASWIONIOCOIS8CbcnkjsgaNKSbc"
+      process.env.JWT_SECRET_KEY
     );
 
     return res.status(200).json({

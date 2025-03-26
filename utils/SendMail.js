@@ -1,4 +1,5 @@
 const nodemailer = require('nodemailer')
+require('dotenv').config()
 
 const transport = nodemailer.createTransport({
     service : 'gmail',
@@ -6,8 +7,8 @@ const transport = nodemailer.createTransport({
     host: "smtp.example.com",
     port : 587,
     auth:{
-        user:"sagarbh@zignuts.com",
-        pass:"ojffaaxwjysgzijc"
+        user:process.env.MAIL_USER,
+        pass:process.env.MAIL_PASSWORD
     }
 })
 
@@ -15,7 +16,7 @@ const sendMail = async(to)=>{
     
     try {
         await transport.sendMail({
-            from:"sagarbh@zignuts.com",
+            from:process.env.SENDER_MAIL,
             to:to,
             subject:'Welcome in portal',
             text:`Hello ,\n\nWelcome to portal! Your account has been successfully created.`,

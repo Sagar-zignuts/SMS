@@ -3,8 +3,8 @@ const bcrypt = require('bcrypt')
 
 const IsAdmin = async()=>{
     try {
-        const password = "admin@123"
-        const email = "admin123@gmail.com"
+        const password = process.env.ADMIN_PASS
+        const email = process.env.ADMIN_EMAIL
         const hashedPassword = await bcrypt.hash(password , 10)
 
         const query = `

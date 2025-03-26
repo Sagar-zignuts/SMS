@@ -19,22 +19,6 @@ const createAdminTable = async () => {
   }
 };
 
-// const createAdmin = async(email,password)=>{
-//   const hashedPassword =  bcrypt.hash(password , 10)
-//   const query = `
-//   INSERT INTO admin
-//   (email , password)
-//   VALUES
-//   $1 ,$2
-//   RETURNING *
-//   `;
-//   const value = [email , hashedPassword]
-//   const {rows} = await client.query(query , value)
-
-//   return rows[0];
-  
-// }
-
 const findByEmail = async(email)=>{
     const query = `
     SELECT * FROM admins

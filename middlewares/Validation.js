@@ -20,8 +20,27 @@ const validatStudent = [
   },
 ];
 
+const validatParentUpdate = [
+  body('name').notEmpty().withMessage("Name is required"),
+  body("relation").notEmpty().withMessage("Relation is required"),
+  body("email")
+    .notEmpty()
+    .withMessage("Email is required")
+    .isEmail()
+    .withMessage("Invalid email format"),
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res
+        .status(400)
+        .json({ message: "Validation failed student", errors: errors.array() });
+    }
+    next();
+  },
+];
+
 const validatParent = [
-  body("studentId")
+  body("student_id")
     .notEmpty()
     .withMessage("Student ID is required")
     .isInt()
@@ -43,4 +62,4 @@ const validatParent = [
   },
 ];
 
-module.exports = { validatStudent, validatParent };
+module.exports = { validatStudent, validatParent ,validatParentUpdate };

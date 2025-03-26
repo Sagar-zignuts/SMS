@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const redisClient = require("../config/RedisConfig");
+require('dotenv').config()
 
 const authMiddleware = (req, res, next) => {
   const authHeader = req.headers["authorization"];
@@ -12,10 +12,14 @@ const authMiddleware = (req, res, next) => {
   }
 
   try {
-    const decoder = jwt.verify(token, "sfnNOIEFIUASWIONIOCOIS8CbcnkjsgaNKSbc");
+    const decoder = jwt.verify(token, process.env.JWT_SECRET_KEY);
+    console.log(decoder);
+    
     req.user = decoder;
     next();
   } catch (error) {
+    console.log(error);
+    
     return res
       .status(403)
       .json({ success: false, message: "Invalid token", error });

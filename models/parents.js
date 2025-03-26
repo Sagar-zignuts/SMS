@@ -26,6 +26,7 @@ const createParent = async(email , name , relation , student_id)=>{
     (email , name , relation , student_id)
     VALUES
     ($1 , $2 , $3 , $4)
+    returning *
     `;
     const values = [email , name , relation , student_id]
     const {rows} =  await client.query(query , values)
@@ -52,6 +53,8 @@ const getParentById = async(id)=>{
     WHERE id = $1
     `;
     const {rows} = await client.query(query , [id])
+    console.log(rows);
+    
     return rows
   } catch (error) {
     throw new Error("Error in getting parent by id",error.message)
@@ -61,8 +64,8 @@ const getParentById = async(id)=>{
 const updateParent = async(id , name , email , relation )=>{
   try {
     const query = `
-    UPDATE parenst 
-    SET name = $1 , email = $2 , relation $3
+    UPDATE parents
+    SET name = $1 , email = $2 , relation = $3
     WHERE id = $4
     returning *
     `;
@@ -71,7 +74,11 @@ const updateParent = async(id , name , email , relation )=>{
     const {rows} = await client.query(query , values)
   return rows
   } catch (error) {
-    throw new error("Error in updating the parent :",error.message)
+    if (error.code === '23505') {
+      throw new Error ("This data is already in data base , try unique data")
+    }
+
+    throw new error(`Error in updating the parent :,${error.message}`)
   }
 }
 
@@ -80,6 +87,7 @@ const deleteParent = async(id)=>{
     const query =`
     DELETE FROM parents
       WHERE id = $1
+      returning *
     `;
 
     const {rows} =await client.query(query , [id])

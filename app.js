@@ -26,6 +26,6 @@ app.use('/api/auth' , AuthRoute)
 app.use('/api/student' , StudentRoute)
 app.use('/api/parent' , ParentRoute)
 
-app.listen(4000 , ()=>{
+app.listen(process.env.PORT , ()=>{
     console.log("Server running");
 })

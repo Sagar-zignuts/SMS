@@ -1,8 +1,9 @@
 const { client } = require("../config/PgConfig");
 const bcrypt = require("bcrypt");
-const redis = require("../config/RedisConfig");
 const { updateStudent, getStudent, getStudentById ,deleteStudent } = require("../models/students");
 const {createStudent ,getStudentByMail} = require('../models/students')
+const redis = require('../config/RedisConfig')
+
 
 const createStudentByadmin = async(req,res)=>{
   const {email  , className , school, password} = req.body
@@ -16,11 +17,11 @@ const createStudentByadmin = async(req,res)=>{
     console.log(email , className , school , profile_pic , password);
     
     const existingStudent = await getStudentByMail(email);
-    console.log(existingStudent);
     
     if (existingStudent) return res.status(409).json({ message: 'Student already exists' });
 
     const student = await createStudent(email ,className , school , profile_pic , password)
+    await redis.del('students_list');
     return res.status(201).json(student);
   } catch (error) {
     // console.log(error);
@@ -40,10 +41,11 @@ try {
     if (!result) {
       return res.status(400).json({success :false , message : "Student not found"})
     }
+    await redis.del('students_list');
     return res.status(200).json({success : true , message : "Data updated" , data : result})
   
 } catch (error) {
-  console.log(error);
+  
   return res.status(500).json({success : false , message : "Error in update the student"})
 }
 
@@ -51,7 +53,14 @@ try {
 
 const getStudentByAdmin = async (req,res)=>{
     try {
+
+      const cachedStudents = await redis.get('students_list');
+        if (cachedStudents) {
+            return res.json(JSON.parse(cachedStudents));
+        }
+
       const students = await getStudent()
+      await redis.setEx('students_list' , 3600 , JSON.stringify(students))
       return res.status(200).json({success : true , message : "Users founded" , data : students})
     } catch (error) {
       console.log(error);
@@ -91,6 +100,7 @@ const deleteStudentByAdmin = async (req,res)=>{
     if (student.length ===0) {
       return res.status(400).json({success : false , message : "User not Found"})
     }
+    await redis.del('students_list');
     return res.status(200).json({success : true ,message : "User deleted" ,  data : student})
   } catch (error) {
     return res.status(500).json({success : false , message : "error in delete data by id ",error})
