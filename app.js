@@ -6,6 +6,7 @@ const { createAdminTable } = require("./models/admin")
 const {IsAdmin} = require('./IsAdmin')
 const AuthRoute = require('./routes/AuthRoute')
 const StudentRoute = require('./routes/StudentRoute')
+const ParentRoute = require('./routes/ParentRoute')
 
 const app = express()
 
@@ -23,6 +24,7 @@ DBInit()
 
 app.use('/api/auth' , AuthRoute)
 app.use('/api/student' , StudentRoute)
+app.use('/api/parent' , ParentRoute)
 
 app.listen(4000 , ()=>{
     console.log("Server running");
