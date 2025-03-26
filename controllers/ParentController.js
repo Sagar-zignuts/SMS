@@ -1,4 +1,4 @@
-const {createParent , createParentTable ,deleteParent,getParent,getParentById, updateParent} = require('../models/parents')
+const {createParent , createParentTable ,deleteParent,getParent,getParentById, updateParent ,searchParent} = require('../models/parents')
 const {client} = require('../config/PgConfig')
 const bcrypt=  require('bcrypt')
 const redis = require('../config/RedisConfig')
@@ -89,4 +89,18 @@ const getParentWithIdByAdmin = async(req,res)=>{
     }
     }
     
-module.exports = {createParentByAdmin , updateParentByAdmin , deleteParentByAdmin , getParentByAdmin , getParentWithIdByAdmin}
+
+    const searchParentByAdmin = async(req,res)=>{
+        try {
+          const {q} = req.query
+          const parent = await searchParent(q)
+          if (parent.length === 0) {
+            return res.status(400).json({success : false , message : "parent not found"})
+          }
+          return res.status(200).json({success : true , message : "parent found" , data : parent})
+        } catch (error) {
+          return res.status(500).json({success : false , message : `Error in search parent : ${error.message}`})
+        }
+      }
+
+module.exports = {createParentByAdmin , updateParentByAdmin , deleteParentByAdmin , getParentByAdmin , getParentWithIdByAdmin ,searchParentByAdmin}

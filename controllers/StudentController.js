@@ -1,6 +1,6 @@
 const { client } = require("../config/PgConfig");
 const bcrypt = require("bcrypt");
-const { updateStudent, getStudent, getStudentById ,deleteStudent } = require("../models/students");
+const { updateStudent, getStudent, getStudentById ,deleteStudent, searchStudent } = require("../models/students");
 const {createStudent ,getStudentByMail} = require('../models/students')
 const redis = require('../config/RedisConfig')
 
@@ -108,4 +108,17 @@ const deleteStudentByAdmin = async (req,res)=>{
 
 }
 
-module.exports = {createStudentByadmin,getStudentByAdmin,updateStudentByAdmin ,getStudentWithIdByAdmin , deleteStudentByAdmin}
+const searchStudentByAdmin = async(req,res)=>{
+  try {
+    const {q} = req.query
+    const student = await searchStudent(q)
+    if (student.length === 0) {
+      return res.status(400).json({success : false , message : "Student not found"})
+    }
+    return res.status(200).json({success : true , message : "Student found" , data : student})
+  } catch (error) {
+    return res.status(500).json({success : false , message : `Error in search student : ${error.message}`})
+  }
+}
+
+module.exports = {createStudentByadmin,getStudentByAdmin,updateStudentByAdmin ,getStudentWithIdByAdmin , deleteStudentByAdmin , searchStudentByAdmin}

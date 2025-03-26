@@ -1,5 +1,7 @@
 const { body, validationResult } = require("express-validator");
 
+//validate the student
+
 const validatStudent = [
   body("email").notEmpty().withMessage("Mail field should not be empty"),
   body("password")
@@ -20,6 +22,9 @@ const validatStudent = [
   },
 ];
 
+
+//validate the parent when admin try to update parent
+
 const validatParentUpdate = [
   body('name').notEmpty().withMessage("Name is required"),
   body("relation").notEmpty().withMessage("Relation is required"),
@@ -38,6 +43,9 @@ const validatParentUpdate = [
     next();
   },
 ];
+
+
+//validate the parent
 
 const validatParent = [
   body("student_id")

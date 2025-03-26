@@ -17,9 +17,7 @@ const isValidEmail = (email) => {
 
 const registerStudent = async (req, res) => {
   const { email, className, school, password } = req.body;
-  const profile_pic = req.file?.path; //
-  console.log(email, className, school, profile_pic, password);
-
+  const profile_pic = req.file?.path; 
   if (!email || !className || !school || !profile_pic || !password) {
     return res
       .status(400)
@@ -41,7 +39,6 @@ const registerStudent = async (req, res) => {
       .status(200)
       .json({ success: true, message: "student register successfuly" });
   } catch (error) {
-    console.log(error);
 
     return res.status(500).json({ success: false, message: error });
   }

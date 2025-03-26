@@ -1,6 +1,9 @@
 const { client } = require("../config/PgConfig");
 const bcrypt = require("bcrypt");
 
+
+//Every operations of students
+
 const createStudentTable = async () => {
   
   try {
@@ -111,6 +114,22 @@ const deleteStudent = async(id)=>{
   }
 }
 
+const searchStudent = async (q) => {
+  if (!q) {
+    throw new Error ('Search query is required');
+  }
+
+  try {
+
+    const query = 'SELECT * FROM students WHERE email ILIKE $1';
+    const { rows } = await client.query(query, [`%${q}%`]);
+    
+    return rows;
+  } catch (error) {
+    throw new Error(`Error searching student, : ${error.message}` )
+  }
+};
+
 module.exports = {
   createStudentTable,
   createStudent,
@@ -118,5 +137,6 @@ module.exports = {
   getStudentById,
   getStudentByMail,
   updateStudent,
-  deleteStudent
+  deleteStudent,
+  searchStudent
 };

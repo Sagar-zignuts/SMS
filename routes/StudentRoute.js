@@ -4,6 +4,7 @@ const {
   deleteStudentByAdmin,
   updateStudentByAdmin,
   createStudentByadmin,
+  searchStudentByAdmin,
 } = require("../controllers/StudentController");
 const {
   authMiddleware,
@@ -12,11 +13,15 @@ const {
 const upload = require("../middlewares/Uploads");
 const { validatStudent } = require("../middlewares/Validation");
 
+
 const router = require("express").Router();
 
+//Middleware used for check user is login or not.
 router.use(authMiddleware);
 
+//route for students
 router.get("/", restrictedTo("admin"), getStudentByAdmin);
+router.get('/search' , restrictedTo('admin') , searchStudentByAdmin)
 router.get("/:id", restrictedTo("admin"), getStudentWithIdByAdmin);
 router.post(
   "/",
@@ -33,5 +38,7 @@ router.put(
   updateStudentByAdmin
 );
 router.delete("/:id", restrictedTo("admin"), deleteStudentByAdmin);
+
+
 
 module.exports = router;

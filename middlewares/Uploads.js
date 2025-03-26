@@ -1,6 +1,8 @@
 const multer = require("multer");
 const path = require("path");
 
+//File for upload data (Profile pic sore)
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, path.join(__dirname, "../uploads"));

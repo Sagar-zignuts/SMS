@@ -1,5 +1,7 @@
 const { client } = require("../config/PgConfig");
 
+//Every operations of parent
+
 const createParentTable = async () => {
   const query = `
     CREATE TABLE IF NOT EXISTS parents(
@@ -97,4 +99,20 @@ const deleteParent = async(id)=>{
   }
 }
 
-module.exports = { createParentTable  ,createParent ,deleteParent ,getParent , updateParent ,getParentById};
+const searchParent = async (q) => {
+  if (!q) {
+    throw new Error ('Search query is required');
+  }
+
+  try {
+
+    const query = 'SELECT * FROM parents WHERE email ILIKE $1';
+    const { rows } = await client.query(query, [`%${q}%`]);
+    
+    return rows;
+  } catch (error) {
+    throw new Error(`Error searching parents, : ${error.message}` )
+  }
+};
+
+module.exports = { createParentTable  ,createParent ,deleteParent ,getParent , updateParent ,getParentById , searchParent};

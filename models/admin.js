@@ -2,6 +2,7 @@ const e = require("express");
 const { client } = require("../config/PgConfig");
 const bcrypt = require('bcrypt')
 
+//To just create table of admin
 const createAdminTable = async () => {
   const query = `
     CREATE TABLE IF NOT EXISTS admins (
@@ -23,7 +24,7 @@ const findByEmail = async(email)=>{
     const query = `
     SELECT * FROM admins
     WHERE email = $1`;
-    console.log(email);
+
     
     const {rows} = await client.query(query,[email])
     return rows[0];
