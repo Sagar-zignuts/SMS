@@ -13,7 +13,7 @@ const client = new Client({
 
 client
   .connect()
-  .then(() => console.log("PostgreSQL connected successfully"))
+  // .then(() => console.log("PostgreSQL connected successfully"))
   .catch((err) => console.log(`Connection error : ${err}`));
 
   module.exports = {client};

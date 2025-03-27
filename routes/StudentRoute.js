@@ -1,44 +1,20 @@
-const {
-  getStudentByAdmin,
-  getStudentWithIdByAdmin,
-  deleteStudentByAdmin,
-  updateStudentByAdmin,
-  createStudentByadmin,
-  searchStudentByAdmin,
-} = require("../controllers/StudentController");
-const {
-  authMiddleware,
-  restrictedTo,
-} = require("../middlewares/AuthMiddleware");
 const upload = require("../middlewares/Uploads");
-const { validatStudent } = require("../middlewares/Validation");
-
 
 const router = require("express").Router();
 
-//Middleware used for check user is login or not.
-router.use(authMiddleware);
+const {
+    authMiddleware,
+    restrictedTo,
+  } = require("../middlewares/AuthMiddleware");
 
-//route for students
-router.get("/", restrictedTo("admin"), getStudentByAdmin);
-router.get('/search' , restrictedTo('admin') , searchStudentByAdmin)
-router.get("/:id", restrictedTo("admin"), getStudentWithIdByAdmin);
-router.post(
-  "/",
-  restrictedTo("admin"),
-  upload.single("profile_pic"),
-  validatStudent,
-  createStudentByadmin
-);
-router.put(
-  "/:id",
-  restrictedTo("admin"),
-  upload.single("profile_pic"),
-  validatStudent,
-  updateStudentByAdmin
-);
-router.delete("/:id", restrictedTo("admin"), deleteStudentByAdmin);
+const {createStudent,deleteStudent,getStudent,getStudentById,updateStudent} = require('../controllers/StudentController')
 
+router.use(authMiddleware)
 
+router.get('/' , restrictedTo('admin' , 'student'),getStudent)
+router.get('/:id' , restrictedTo('admin' , 'student') , getStudentById)
+router.post('/', restrictedTo('admin') , upload.single("profile_pic") , createStudent)
+router.delete('/' , restrictedTo('admin') , deleteStudent)
+router.put('/' , restrictedTo('admin'), upload.single("profile_pic") , updateStudent)
 
 module.exports = router;

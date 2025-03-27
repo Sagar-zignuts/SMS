@@ -1,106 +1,104 @@
-const {createParent , createParentTable ,deleteParent,getParent,getParentById, updateParent ,searchParent} = require('../models/parents')
-const {client} = require('../config/PgConfig')
-const bcrypt=  require('bcrypt')
 const redis = require('../config/RedisConfig')
+const validator = require('validatorjs')
+const ParentModel = require('../models/parents')
+const StudentModel = require('../models/students')
 
 
-const createParentByAdmin = async (req , res)=>{
+const createParent = async (req,res)=>{
     try {
-        const {email , name , relation , student_id} = req.body
-
-        if (!email || !name  || !relation || !student_id) {
-            return res.status(400).json({success : false , message : "All field is required"})
+        const validation = new validator(req.body , {
+            email : 'required|email',
+            name : 'required',
+            relation : 'required',
+            Student_id : 'required'
+        })
+        if (validation.fails()) {
+            return res.status(400).json({status : 400 , message : "Field is required"})
         }
 
-        const parent = await createParent(email , name ,relation, student_id)
-        await redis.del("parents_list")
-            return res.status(200).json({success : true , message : "Parent created" , data : parent})
+        const {email , name , relation , Student_id} = req.body
+        const parent = await ParentModel.create({email , name , relation , Student_id})
+        return res.status(200).json({status : 200 , message : "Parent created" , data : parent})
     } catch (error) {
-        return res.status(500).json({success : false , message :"Error in creating  paretn : "+error.message})
-    }
-}
-
-const updateParentByAdmin = async (req,res)=>{
-        try {
-            const {id} = req.params
-            const {name , relation , email} = req.body
-    
-            if (!relation || !email) return res.status(400).json({ message: 'Missing fields' });
-            const parent = await updateParent(id , name , email , relation)
-            if (parent.length === 0) return res.status(400).json({ message: 'Parent not found' });
-            await redis.del("parents_list")
-        return res.status(200).json({success :true ,message : "Parent updated" ,parent});
-        } catch (error) {
-            if (error.code === '23505') {
-                return res.status(400).json({message : "This data is already in data base , try unique data"})
-            }
-            
-            return res.status(500).json({ message: `Error updating parent: ${error.message}` });
-        }
-}
-
-
-const deleteParentByAdmin = async (req, res) => {
-    const { id } = req.params;
-  
-    try {
-      const result = await deleteParent(id);
-      if (result.length === 0) return res.status(400).json({ message: 'Parent not found' });
-      await redis.del('parents_list')
-      return res.status(200).json({ message: 'Parent deleted', parent: result});
-    } catch (error) {
-      return res.status(500).json({ message: 'Error deleting parent: ' + error.message });
-    }
-  };
-
-const getParentByAdmin = async(req,res)=>{
-try {
-    
-    const cachedParents =await redis.get("parents_list")
-    if (cachedParents) {
-        return res.status(200).json(cachedParents)
-    }
-
-    const result = await getParent()
-        if (!result) {
-            return res.status(400).json({ message: 'Parent not found in search' }); 
-        }
-        await redis.setEx("parents_list" , 3600, JSON.stringify(result))
-        return res.status(200).json({success : true , message: 'All Parents', parent: result });
-    
-} catch (error) {
-    return res.status(500).json({success : false ,  message: 'Error getting parent: ' + error.message });
-}
-}
-
-
-
-const getParentWithIdByAdmin = async(req,res)=>{
-    try {
-        const {id}= req.params
-            const result = await getParentById(id)
-            if (result.length === 0) {
-                return res.status(400).json({ message: 'Parent not found in search by id' }); 
-            }
-            return res.status(200).json({success : true , message: 'Parent', parent: result });
+        console.log(error);
         
+        return res.status(500).json({status : 500 , message : "server Error in create student"})
+    }
+}
+const getParent  =async (req,res)=>{
+    try {
+        const parent = await ParentModel.findAll({
+            attributes : ['id', 'email' , 'name' ,'relation', 'Student_id']
+        })
+        return res.status(200).json({status:200 , message : "All data fetched" , data : parent})
     } catch (error) {
-        return res.status(500).json({success : false ,  message: 'Error getting parent by id: ' + error.message });
+        return res.status(500).json({status:500 , message : "Server error in all data fetch"})
     }
-    }
-    
+}
 
-    const searchParentByAdmin = async(req,res)=>{
-        try {
-          const {q} = req.query
-          const parent = await searchParent(q)
-          if (parent.length === 0) {
-            return res.status(400).json({success : false , message : "parent not found"})
-          }
-          return res.status(200).json({success : true , message : "parent found" , data : parent})
-        } catch (error) {
-          return res.status(500).json({success : false , message : `Error in search parent : ${error.message}`})
+const getParentById = async (req,res)=>{
+    try {
+        const parent = await ParentModel.findByPk(req.params.id , {
+            attributes : ['id', 'email' , 'name','relation', 'Student_id']
+        })
+        if (!parent) {
+            return res.status(400).json({status:400 , message:"parent not found"})
         }
-      }
+        return res.status(200).json({status:200 , message : "Data fetched" , data : parent})
+    } catch (error) {
+        return res.status(500).json({status:500 , message : "Server error in all data fetch"})
+    }
+}
 
-module.exports = {createParentByAdmin , updateParentByAdmin , deleteParentByAdmin , getParentByAdmin , getParentWithIdByAdmin ,searchParentByAdmin}
+const updateParent = async (req,res)=>{
+    try {
+        const parent_id = req.headers['parent_id']
+        const validation = new validator(req.body , {
+            email : "required|email",
+            name : 'required',
+            relation : 'required',
+            Student_id : 'required'
+        })
+
+        if (validation.fails()) {
+            return res.status(400).json({ status : 400, message : `Error in validation : ${validation.errors.all()}` });
+        }
+
+        const {email, name , relation,Student_id} = req.body
+
+        const updates = {
+            email,
+            name,
+            relation,
+            Student_id
+        }
+
+        const parent= await ParentModel.findByPk(parent_id)
+        if (!parent) {
+            return res.status(400).json({status : 400 , message  : "parent not exiest"})
+        } 
+
+        const result= await ParentModel.update(updates , {
+            where : {id : parent_id}
+        })
+         return res.status(200).json({status : 200 , message : "parent updated" , data : result})
+    } catch (error) {
+        return res.status(500).json({status:500 , message : "Server error in update data"})
+    }
+}
+
+const deleteParent = async (req,res)=>{
+    try {
+        const parent_id = req.headers['parent_id']
+        const parent = await ParentModel.findByPk(parent_id)
+        if (!parent) {
+            return res.status(400).json({status : 400 , message : "Parent is not exists"})
+        }
+        const result = await parent.destroy()
+        return res.status(200).json({status : 200 , message : "parent deleted" , data : result})
+    } catch (error) {
+        return res.status(500).json({status:500 , message : "Server error in update data"})
+    }
+}
+
+module.exports = {createParent,getParent , getParentById , deleteParent ,updateParent}

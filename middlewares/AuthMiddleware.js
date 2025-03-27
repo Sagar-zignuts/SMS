@@ -8,7 +8,7 @@ const authMiddleware = (req, res, next) => {
 
   if (!token) {
     return res
-      .status(401)
+      .status(400)
       .json({ success: false, message: "Token is not availabel" });
   }
 
@@ -17,8 +17,7 @@ const authMiddleware = (req, res, next) => {
     req.user = decoder;
     next();
   } catch (error) {
-    console.log(error);
-    
+
     return res
       .status(403)
       .json({ success: false, message: "Invalid token", error });
