@@ -1,6 +1,5 @@
-const { client } = require("../config/PgConfig");
-const {sequelize} = require('../config/Database');
-const { DataTypes, UUIDV4, Sequelize, DATE, INTEGER } = require("sequelize");
+const {sequelize} = require('../../config/Database');
+const { DataTypes, Sequelize} = require("sequelize");
 const Student = require("./students");
 
 const Parent = sequelize.define("Parent" , {

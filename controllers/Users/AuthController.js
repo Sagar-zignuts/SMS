@@ -1,4 +1,4 @@
-const StudentModel = require('../../models/students')
+const StudentModel = require('../../models/User/students')
 const validator = require('validatorjs')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
@@ -19,9 +19,6 @@ const loginStudent = async(req,res)=>{
         if (!student ) {
             return res.status(400).json({status : 400  ,message : "Wrong email"})
         }
-
-        console.log(student.dataValues);
-        
     
         const result = await bcrypt.compare(password , student.dataValues.password)
         if(!result){
@@ -31,7 +28,7 @@ const loginStudent = async(req,res)=>{
         const token = jwt.sign({
             id : student.id,
             role : "student"
-        }, process.env.JWT_SECRET_KEY)
+        }, process.env.JWT_SECRET_KEY ,{expiresIn : '1h'})
         return res.status(200).json({status : 200 , data : {student , token}})
     } catch (error) {
         return res.status(500).json({status : 500 , message : "Error in server side Authcontroller in user"})
@@ -43,7 +40,6 @@ const registerStudent = async(req,res)=>{
         const {email,className , school , password } = req.body
         const profile_pic = req.file ? req.file.path : null;
 
-        console.log(email, className , school, password ,profile_pic);
         const validation = new validator(req.body , {
             email : 'required|email',
             className : "required",
@@ -76,8 +72,6 @@ const registerStudent = async(req,res)=>{
 
         return res.status(200).json({status : 200 , message : "Student register successfully" , data :result })
     } catch (error) {
-        console.log(error);
-        
         return res.status(500).json({status : 500 , message : "Server error in registr the student."})
     }
 }

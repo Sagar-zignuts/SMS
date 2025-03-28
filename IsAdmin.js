@@ -1,4 +1,3 @@
-const {client} = require('./config/PgConfig')
 const bcrypt = require('bcrypt')
 
 const IsAdmin = async()=>{

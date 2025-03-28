@@ -2,7 +2,6 @@ const multer = require("multer");
 const path = require("path");
 
 //File for upload data (Profile pic sore)
-
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, path.join(__dirname, "../uploads"));
@@ -27,9 +26,10 @@ const filterFile = (req, file, cb) => {
   }
 };
 
+//Main upload function which is use in other files
 const upload = multer({
   storage: storage,
-  limits: { fileSize: 5 * 1024 * 1024 },
+  limits: { fileSize: 5 * 1024 * 1024 }, //Size allowed auto 5 MB.
   fileFilter: filterFile,
 });
 

@@ -1,4 +1,4 @@
-const AdminModel = require('../../models/admin')
+const AdminModel = require('../../models/Admin/admin')
 const validator = require('validatorjs')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
@@ -28,7 +28,7 @@ const loginAdmin = async(req,res)=>{
         const token = jwt.sign({
             id : admin.id,
             role : 'admin'
-        } , process.env.JWT_SECRET_KEY)
+        } , process.env.JWT_SECRET_KEY ,{expiresIn : '1h'})
 
         return res.status(200).json({status : 200 , message : "Welcome Admin" , data :{
             result,

@@ -1,4 +1,5 @@
 const {Sequelize} = require('sequelize')
+require('dotenv').config()
 
 //Function for connect the Sequelize with our app
 const sequelize = new Sequelize(process.env.PG_DATABASE ,process.env.PG_USER ,process.env.PG_PASSWORD,{
