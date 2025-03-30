@@ -25,13 +25,12 @@ const authMiddleware = (req, res, next) => {
 };
 
 //created middleware to check for which peapol the route is awailable
-const restrictedTo = (...roles) => {
-  return (req, res, next) => {
-    if (!roles.includes(req.user.role)) {
+const restrictedToAdmin = (req,res,next) => {
+    if (req.user.role !== "admin") {
       return res.status(403).json({ success: false, message: "Access denied" });
     }
     next();
   };
-};
 
-module.exports = { authMiddleware, restrictedTo };
+
+module.exports = { authMiddleware, restrictedToAdmin };

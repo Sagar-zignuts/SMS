@@ -5,16 +5,18 @@ const jwt = require('jsonwebtoken')
 
 const loginAdmin = async(req,res)=>{
     try {
-        const validation = new validator(req.body,{
+        const {email ,password} = req.body
+        const validation = new validator({email, password},{
             email : 'required|email',
             password : 'required'
         })
 
         if (validation.fails()){
+            console.log(validation.errors);
             return res.status(400).json({status : 400 , message : `Field is required : ${validation.errors.all()}`})
         }
 
-        const {email ,password} = req.body
+        
         const admin = await AdminModel.findOne({where : {email}})
 
         if (!admin) {
@@ -35,6 +37,7 @@ const loginAdmin = async(req,res)=>{
             token
         }})
     } catch (error) {
+        console.log(error);
         return res.status(500).json({message : `Server error in login admin : ${error.message}`})
     }
 }

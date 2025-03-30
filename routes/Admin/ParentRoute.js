@@ -1,14 +1,13 @@
 const router = require("express").Router();
-const {createParent,deleteParent,getAllParent,getParentById,updateParent,searchParents} = require('../../controllers/Admin/ParentController')
-const {authMiddleware , restrictedTo} = require("../../middlewares/AuthMiddleware")
+const {createParent,deleteParent,getAllParents,getParentById,updateParent} = require('../../controllers/Admin/ParentController')
+const {authMiddleware , restrictedToAdmin} = require("../../middlewares/AuthMiddleware")
 
 router.use(authMiddleware)
 
-router.get('/' , restrictedTo('admin'),getParentById)
-router.get('/parents', restrictedTo('admin') , getAllParent)
-router.get('/search' , restrictedTo('admin' , 'student') , searchParents)
-router.post('/',restrictedTo('admin') , createParent)
-router.put('/' , restrictedTo('admin') , updateParent)
-router.delete('/' , restrictedTo('admin') , deleteParent)
+router.post('/admin',restrictedToAdmin , createParent)
+router.get('/admin/parents', restrictedToAdmin , getAllParents)
+router.get('/admin' , restrictedToAdmin,getParentById)
+router.put('/admin' , restrictedToAdmin , updateParent)
+router.delete('/admin' , restrictedToAdmin , deleteParent)
 
 module.exports = router;

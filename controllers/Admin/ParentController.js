@@ -18,9 +18,10 @@ const createParent = async (req, res) => {
       }
     );
     if (validation.fails()) {
-      return res
-        .status(400)
-        .json({ status: 400, message: 'Field is required OR somthing entered wrong' });
+      return res.status(400).json({
+        status: 400,
+        message: 'Field is required OR somthing entered wrong',
+      });
     }
 
     const parent = await ParentModel.create({
@@ -35,8 +36,6 @@ const createParent = async (req, res) => {
       .status(200)
       .json({ status: 200, message: 'Parent created', data: parent });
   } catch (error) {
-    console.log(error);
-    
     return res
       .status(500)
       .json({ status: 500, message: 'server Error in create student' });
@@ -44,42 +43,66 @@ const createParent = async (req, res) => {
 };
 
 //get parent by admin
-const getAllParent = async (req, res) => {
+const getAllParents = async (req, res) => {
   try {
-    const parent = await ParentModel.findAll({
-      attributes: ['id', 'email', 'name', 'relation', 'Student_id'],
-    });
-    if (parent.length === 0) {
-      return res.status(200).json({ status: 200, message: 'No data here' });
+    const { name } = req.query;
+    let parents;
+
+    if (name) {
+      // Search parents by name
+      parents = await ParentModel.findAll({
+        where: { name: { [Op.like]: `%${name}%` } },
+        attributes: ['id', 'email', 'name', 'relation', 'Student_id'],
+      });
+
+      if (parents.length === 0) {
+        return res.status(400).json({
+          status: 400,
+          message: "No parents found with the given name",
+        });
+      }
+    } else {
+      parents = await ParentModel.findAll({
+        attributes: ['id', 'email', 'name', 'relation', 'Student_id'],
+      });
+
+      if (parents.length === 0) {
+        return res.status(400).json({
+          status: 400,
+          message: "No parents found",
+        });
+      }
     }
 
-    return res
-      .status(200)
-      .json({ status: 200, message: 'All data fetched', data: parent });
+    return res.status(200).json({
+      status: 200,
+      message: "parents retrieved successfully",
+      data: parents,
+    });
   } catch (error) {
-    return res
-      .status(500)
-      .json({ status: 500, message: 'Server error in all data fetch' });
+    console.error("Error in fetching parents:", error);
+    return res.status(500).json({
+      status: 500,
+      message: "Server error in fetching parents",
+    });
   }
 };
 
 //get parent by admin
 const getParentById = async (req, res) => {
   try {
-    const { id } = req.query;
-    const redisKey = `parent:${id}`;
+    const { parent_id } = req.query;
+    const redisKey = `parent:${parent_id}`;
     const cachedParent = await redis.get(redisKey);
 
     if (cachedParent) {
-      return res
-        .status(200)
-        .json({
-          status: 200,
-          message: 'data fetched',
-          data: JSON.parse(cachedParent),
-        }); // Return cached data
+      return res.status(200).json({
+        status: 200,
+        message: 'data fetched',
+        data: JSON.parse(cachedParent),
+      }); // Return cached data
     }
-    const parent = await ParentModel.findByPk(id, {
+    const parent = await ParentModel.findByPk(parent_id, {
       attributes: ['id', 'email', 'name', 'relation', 'Student_id'],
     });
 
@@ -137,7 +160,7 @@ const updateParent = async (req, res) => {
 
     const result = await ParentModel.update(updates, {
       where: { id: parent_id },
-      returning : true
+      returning: true,
     });
 
     await redis.setEx(`parent:${parent_id}`, 3600, JSON.stringify(result[1]));
@@ -154,7 +177,7 @@ const updateParent = async (req, res) => {
 //delete parent by admin
 const deleteParent = async (req, res) => {
   try {
-    const {parent_id} = req.query;
+    const { parent_id } = req.query;
     const parent = await ParentModel.findByPk(parent_id);
     if (!parent) {
       return res
@@ -163,10 +186,8 @@ const deleteParent = async (req, res) => {
     }
 
     await redis.del(`parent:${parent_id}`);
-    const result = await parent.destroy();
-    return res
-      .status(200)
-      .json({ status: 200, message: 'parent deleted'});
+    await parent.destroy();
+    return res.status(200).json({ status: 200, message: 'parent deleted' });
   } catch (error) {
     return res
       .status(500)
@@ -174,63 +195,10 @@ const deleteParent = async (req, res) => {
   }
 };
 
-//search parent by admin
-async function searchParents(req, res) {
-  try {
-    const email = req.headers['email'];
-    const relation = req.headers['relation'];
-    const name = req.headers['name'];
-
-    const where = {};
-    if (email) where.email = { [Op.like]: `%${email}%` };
-    if (name) where.name = { [Op.like]: `%${name}%` };
-    if (relation) where.relation = { [Op.like]: `%${relation}%` };
-
-    if (Object.keys(where).length === 0) {
-      return res.status(400).json({
-        status: 400,
-        message:
-          'At least one search parameter (email, name, relation) is required',
-      });
-    }
-
-    const parents = await ParentModel.findAll({
-      where,
-      attributes: [
-        'id',
-        'email',
-        'name',
-        'relation',
-        'student_id',
-        'createdAt',
-      ],
-    });
-
-    if (parents.length === 0) {
-      return res.status(400).json({
-        status: 400,
-        message: 'No parents found matching the criteria',
-      });
-    }
-
-    return res.status(200).json({
-      status: 200,
-      message: 'Parents found',
-      data: parents,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      status: 500,
-      message: 'Server error in search parents',
-    });
-  }
-}
-
 module.exports = {
   createParent,
-  getAllParent,
+  getAllParents,
   getParentById,
   deleteParent,
   updateParent,
-  searchParents,
 };
