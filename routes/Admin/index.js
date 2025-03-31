@@ -1,5 +1,5 @@
-const AuthAdminRoute = require('./AuthRoute')
-const StudentRouteByAdmin = require('./StudentRoute')
-const ParentRouteByAdmin = require('./ParentRoute')
+const AuthAdminRoute = require('./AuthRoute');
+const StudentRouteByAdmin = require('./StudentRoute');
+const ParentRouteByAdmin = require('./ParentRoute');
 
-module.exports = {AuthAdminRoute , ParentRouteByAdmin , StudentRouteByAdmin}
+module.exports = { AuthAdminRoute, ParentRouteByAdmin, StudentRouteByAdmin };

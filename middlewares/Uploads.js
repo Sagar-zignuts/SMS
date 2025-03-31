@@ -1,15 +1,15 @@
-const multer = require("multer");
-const path = require("path");
+const multer = require('multer');
+const path = require('path');
 
 //File for upload data (Profile pic sore)
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, "../uploads"));
+    cb(null, path.join(__dirname, '../uploads'));
   },
   filename: (req, file, cb) => {
     cb(
       null,
-      file.fieldname + "_" + Date.now() + path.extname(file.originalname)
+      file.fieldname + '_' + Date.now() + path.extname(file.originalname)
     );
   },
 });
@@ -22,7 +22,7 @@ const filterFile = (req, file, cb) => {
   if (extname && mimetype) {
     return cb(null, true);
   } else {
-    cb(new Error("Only Jpg,Jpeg,png files are allowed"));
+    cb(new Error('Only Jpg,Jpeg,png files are allowed'));
   }
 };
 

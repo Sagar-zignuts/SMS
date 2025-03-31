@@ -1,4 +1,4 @@
-const AuthStudentRoute = require('./AuthRoute')
-const StudentRoute = require('./StudentRoute')
+const AuthStudentRoute = require('./AuthRoute');
+const StudentRoute = require('./StudentRoute');
 
-module.exports = {AuthStudentRoute , StudentRoute}
+module.exports = { AuthStudentRoute, StudentRoute };

@@ -1,12 +1,13 @@
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcrypt');
 
-const IsAdmin = async()=>{
-    try {
-        const password = process.env.ADMIN_PASS
-        const email = process.env.ADMIN_EMAIL
-        const hashedPassword = await bcrypt.hash(password , 10)
+//Just add admin data into the data base
+const IsAdmin = async () => {
+  try {
+    const password = process.env.ADMIN_PASS;
+    const email = process.env.ADMIN_EMAIL;
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-        const query = `
+    const query = `
             INSERT INTO admins (email , password)
             VALUES 
             ($1 , $2)
@@ -14,13 +15,12 @@ const IsAdmin = async()=>{
             RETURNING *
         `;
 
-        const values = [email , hashedPassword]
+    const values = [email, hashedPassword];
 
-        const {rows} = await client.query(query , values)
+    const { rows } = await client.query(query, values);
+  } catch (error) {
+    console.log(`Error in set admin : ${error}`);
+  }
+};
 
-    } catch (error) {
-        console.log(`Error in set admin : ${error}`);
-    } 
-}
-
-module.exports = {IsAdmin};
+module.exports = { IsAdmin };

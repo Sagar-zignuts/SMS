@@ -58,7 +58,7 @@ const getAllParents = async (req, res) => {
       if (parents.length === 0) {
         return res.status(400).json({
           status: 400,
-          message: "No parents found with the given name",
+          message: 'No parents found with the given name',
         });
       }
     } else {
@@ -69,21 +69,21 @@ const getAllParents = async (req, res) => {
       if (parents.length === 0) {
         return res.status(400).json({
           status: 400,
-          message: "No parents found",
+          message: 'No parents found',
         });
       }
     }
 
     return res.status(200).json({
       status: 200,
-      message: "parents retrieved successfully",
+      message: 'parents retrieved successfully',
       data: parents,
     });
   } catch (error) {
-    console.error("Error in fetching parents:", error);
+    console.error('Error in fetching parents:', error);
     return res.status(500).json({
       status: 500,
-      message: "Server error in fetching parents",
+      message: 'Server error in fetching parents',
     });
   }
 };

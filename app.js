@@ -1,10 +1,10 @@
 const express = require('express');
-const {AuthAdminRoute} = require('./routes/Admin/index');
-const {StudentRouteByAdmin} = require('./routes/Admin/index');
-const {ParentRouteByAdmin} = require('./routes/Admin/index');
-const {AuthStudentRoute} = require('./routes/User/index');
-const {StudentRoute} = require('./routes/User/index')
-const Admin = require('./models/Admin/admin'); // Used for add default admin data which is used just one time
+const { AuthAdminRoute } = require('./routes/Admin/index');
+const { StudentRouteByAdmin } = require('./routes/Admin/index');
+const { ParentRouteByAdmin } = require('./routes/Admin/index');
+const { AuthStudentRoute } = require('./routes/User/index');
+const { StudentRoute } = require('./routes/User/index');
+// const Admin = require('./models/Admin/admin'); // Used for add default admin data which is used just one time
 const { sequelize } = require('./config/Database');
 
 const app = express();
@@ -15,15 +15,15 @@ app.use(express.json());
 //Routes which is used in project
 app.use('/api/auth/admin', AuthAdminRoute);
 app.use('/api/auth/student', AuthStudentRoute);
-app.use('/api/parentByAdmin',ParentRouteByAdmin)
+app.use('/api/parentByAdmin', ParentRouteByAdmin);
 app.use('/api/studentByAdmin', StudentRouteByAdmin);
-app.use('/api/student' , StudentRoute)
-
+app.use('/api/student', StudentRoute);
 
 //Set admin defaut data and check connection details
 const startServer = async () => {
   try {
     await sequelize.sync({ force: false });
+    //Just set admin data into the database
     // await Admin.create({
     //   email: 'admin123@gmail.com',
     //   password: 'admin@123',

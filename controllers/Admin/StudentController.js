@@ -55,39 +55,53 @@ const getAllStudents = async (req, res) => {
       // Search students by email (case-insensitive)
       students = await StudentModel.findAll({
         where: { email: { [Op.like]: `%${email}%` } },
-        attributes: ["id", "email", "className", "school", "profile_pic", "createdAt"],
+        attributes: [
+          'id',
+          'email',
+          'className',
+          'school',
+          'profile_pic',
+          'createdAt',
+        ],
       });
 
       if (students.length === 0) {
         return res.status(400).json({
           status: 400,
-          message: "No students found with the given email",
+          message: 'No students found with the given email',
         });
       }
     } else {
       // Get all students if no search query is provided
       students = await StudentModel.findAll({
-        attributes: ["id", "email", "className", "school", "profile_pic", "createdAt"],
+        attributes: [
+          'id',
+          'email',
+          'className',
+          'school',
+          'profile_pic',
+          'createdAt',
+        ],
       });
 
       if (students.length === 0) {
         return res.status(400).json({
           status: 400,
-          message: "No students found",
+          message: 'No students found',
         });
       }
     }
 
     return res.status(200).json({
       status: 200,
-      message: "Students retrieved successfully",
+      message: 'Students retrieved successfully',
       data: students,
     });
   } catch (error) {
-    console.error("Error in fetching students:", error);
+    console.error('Error in fetching students:', error);
     return res.status(500).json({
       status: 500,
-      message: "Server error in fetching students",
+      message: 'Server error in fetching students',
     });
   }
 };
@@ -141,10 +155,12 @@ const updateStudent = async (req, res) => {
     const { email, className, school } = req.body;
     const profile_pic = req.file ? req.file.path : null;
 
-    const {student_id} = req.query;
+    const { student_id } = req.query;
 
     if (!student_id) {
-        return res.status(400).json({status :400 , message : "Query parameter is required"})
+      return res
+        .status(400)
+        .json({ status: 400, message: 'Query parameter is required' });
     }
 
     const validation = new validator(
@@ -185,7 +201,7 @@ const updateStudent = async (req, res) => {
 
     const data = await StudentModel.update(updates, {
       where: { id: student_id },
-      returning : true
+      returning: true,
     });
 
     await redis.setEx(`student:${student_id}`, 3600, JSON.stringify(data[1]));
@@ -203,9 +219,11 @@ const updateStudent = async (req, res) => {
 //Delete student by admin
 const deleteStudent = async (req, res) => {
   try {
-    const {student_id} = req.query;
+    const { student_id } = req.query;
     if (!student_id) {
-      return res.status(400).json({ status: 400, message: 'Query parameter is required' });
+      return res
+        .status(400)
+        .json({ status: 400, message: 'Query parameter is required' });
     }
 
     const student = await StudentModel.findByPk(student_id);
@@ -217,9 +235,7 @@ const deleteStudent = async (req, res) => {
 
     await redis.del(`student:${student_id}`);
     const data = await student.destroy();
-    return res
-      .status(200)
-      .json({ status: 200, message: 'Student deleted'});
+    return res.status(200).json({ status: 200, message: 'Student deleted' });
   } catch (error) {
     return res
       .status(500)
